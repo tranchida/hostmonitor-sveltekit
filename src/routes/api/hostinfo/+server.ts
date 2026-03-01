@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import si from 'systeminformation';
-import os from 'os';
-import fs from 'fs';
+import os from 'node:os';
+import fs from 'node:fs';
 
 /** Format bytes to human-readable string (e.g. "3.8 GiB") */
 function formatBytes(bytes: number): string {
