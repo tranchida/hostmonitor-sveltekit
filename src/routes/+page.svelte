@@ -1,14 +1,42 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { startPolling, stopPolling, getHostInfo } from '$lib/hostinfo.svelte';
+	import { initDarkMode, toggleDarkMode, isDark } from '$lib/darkmode.svelte';
 
 	const state = getHostInfo();
+	const darkState = isDark();
 
-	onMount(() => startPolling());
+	onMount(() => {
+		initDarkMode();
+		startPolling();
+	});
 	onDestroy(() => stopPolling());
 </script>
 
-<div class="font-sans bg-gray-900 min-h-screen p-4">
+<div class="font-sans bg-gray-100 dark:bg-gray-900 min-h-screen p-4">
+	<!-- Dark mode toggle -->
+	<div class="flex justify-end mb-2">
+		<button
+			onclick={toggleDarkMode}
+			class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+			aria-label="Toggle dark mode"
+		>
+			{#if darkState.value}
+				<!-- Sun icon -->
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+				</svg>
+			{:else}
+				<!-- Moon icon -->
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+				</svg>
+			{/if}
+		</button>
+	</div>
+
 	{#if state.loading && !state.data}
 		<div class="bg-sky-600 p-8 rounded-md text-white text-center text-xl">
 			Loading host information...
@@ -19,7 +47,7 @@
 		</div>
 	{:else if state.data}
 		{@const info = state.data}
-		<div class="bg-sky-600 p-4 rounded-md">
+		<div class="bg-sky-600 dark:bg-sky-900 p-4 rounded-md">
 			<div class="flex flex-row">
 				<div class="flex items-center justify-center w-15 -rotate-90 whitespace-nowrap text-white uppercase text-2xl font-bold">
 					System information
@@ -121,7 +149,7 @@
 									Yes
 								</span>
 							{:else}
-								<span class="inline-flex items-center gap-1 text-gray-500 font-semibold">
+								<span class="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 font-semibold">
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
 									No
 								</span>
@@ -136,7 +164,7 @@
 							{#if info.NetworkInterfaces && info.NetworkInterfaces.length > 0}
 								<div class="flex flex-wrap gap-2">
 									{#each info.NetworkInterfaces as iface}
-										<span class="inline-block bg-sky-100 text-sky-800 text-sm font-mono px-2 py-0.5 rounded">{iface}</span>
+										<span class="inline-block bg-sky-100 dark:bg-sky-900 text-sky-800 dark:text-sky-200 text-sm font-mono px-2 py-0.5 rounded">{iface}</span>
 									{/each}
 								</div>
 							{:else}
@@ -155,7 +183,7 @@
 		</div>
 
 		<!-- Footer -->
-		<div class="text-center text-gray-500 text-sm mt-4">
+		<div class="text-center text-gray-500 dark:text-gray-400 text-sm mt-4">
 			Last updated: {info.CurrentTime} · Polling every 10s
 		</div>
 	{/if}
@@ -165,10 +193,10 @@
 	@reference '../app.css';
 
 	:global(.card) {
-		@apply p-4 bg-white border border-solid rounded-md shadow-md shadow-sky-950 hover:ring-2 hover:ring-inset hover:ring-sky-800 transition;
+		@apply p-4 bg-white dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 border border-solid rounded-md shadow-md shadow-sky-950 hover:ring-2 hover:ring-inset hover:ring-sky-800 transition;
 	}
 	:global(.card-label) {
-		@apply font-bold block mb-1.5;
+		@apply font-bold block mb-1.5 dark:text-gray-300;
 	}
 	:global(.card-value) {
 		@apply break-all;
